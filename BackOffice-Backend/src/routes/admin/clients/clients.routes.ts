@@ -1,3 +1,6 @@
+// only direct the request to the controller
+// no business logic here
+
 import { Router } from "express";
 import { validateBody } from "./validate";
 import { createClientBodySchema } from "./clients.schema";

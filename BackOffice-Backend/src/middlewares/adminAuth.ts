@@ -4,6 +4,7 @@ import { config } from "../core/config";
 
 export const adminAuth = (req: Request, res: Response, next: NextFunction) => {
   // note to myself - we get headers object express create it as req ==> req.head
+  console.log("adminAuth hit", req.method, req.path);
   console.log("🔥 adminAuth middleware hit");
   const authHeader = req.headers.authorization;
   if (!authHeader) {
@@ -39,5 +40,3 @@ export const adminAuth = (req: Request, res: Response, next: NextFunction) => {
 
   next();
 };
-
-
