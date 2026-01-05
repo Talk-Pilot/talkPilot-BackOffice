@@ -9,6 +9,9 @@ const rawAdminToken = process.env.ADMIN_TOKEN;
 const rawMongoUrl = process.env.MONGO_URI;
 const rawMongoDbName = process.env.MONGO_DB_NAME;
 const rawLogLevel = process.env.LOG_LEVEL;
+const rawFirebaseProjectId = process.env.FIREBASE_PROJECT_ID;
+const rawFirebaseClientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+const rawFirebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;
 
 // config validation b4 app starts for envierment values -  for mongoUrl, adminToken and MongodbName
 const getRequiredEnv = (envVariableName: string): string => {
@@ -20,13 +23,6 @@ const getRequiredEnv = (envVariableName: string): string => {
   return envValue;
 };
 
-let port: number;
-if (rawPort) {
-  port = Number(rawPort);
-} else {
-  port = 8000;
-}
-
 let nodeEnv: "development" | "production" | "local";
 if (
   rawNodeEnv === "development" ||
@@ -37,6 +33,31 @@ if (
 } else {
   nodeEnv = "development";
 }
+
+let port: number;
+if (rawPort) {
+  port = Number(rawPort);
+} else {
+  port = 8000;
+}
+
+let firebase = {
+  projectId: "",
+  clientEmail: "",
+  privateKey: "",
+};
+
+if (nodeEnv === "production") {
+  firebase.projectId = getRequiredEnv("FIREBASE_PROJECT_ID");
+  firebase.clientEmail = getRequiredEnv("FIREBASE_CLIENT_EMAIL");
+  firebase.privateKey = getRequiredEnv("FIREBASE_PRIVATE_KEY");
+} else {
+  firebase.projectId = rawFirebaseProjectId || "";
+  firebase.clientEmail = rawFirebaseClientEmail || "";
+  firebase.privateKey = rawFirebasePrivateKey || "";
+}
+
+firebase.privateKey = firebase.privateKey.replace(/\\n/g, "\n");
 
 let adminToken: string;
 if (nodeEnv === "production") {
@@ -78,6 +99,7 @@ export const config: Config = {
   mongoUrl,
   mongoDbName,
   logLevel,
+  firebase,
 };
 
 // my note:

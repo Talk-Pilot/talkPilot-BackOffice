@@ -5,10 +5,15 @@
 
 import { Request, Response } from "express";
 import { CreateClientBodyType } from "./clients.types";
+import { createClientService } from "./clients.service";
 
 export const createNewClient = async (req: Request, res: Response) => {
   try {
-    const body = req.body as CreateClientBodyType;
+    const clientBody = req.body as CreateClientBodyType;
+    //take the body from the request and call the service
+    const clientResult = await createClientService(clientBody);
+    //
+    res.status(201).json(clientResult);
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ message: "Failed to create client" });

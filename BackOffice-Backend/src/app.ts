@@ -5,10 +5,9 @@ import clientsRouter from "./routes/admin/clients/clients.routes";
 const app = express();
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Server on");
-});
 app.use(adminAuth);
+
+// app.use("/", getAllClients);
 
 app.use("/clients", clientsRouter);
 

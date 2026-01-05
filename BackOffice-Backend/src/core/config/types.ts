@@ -5,9 +5,11 @@ export type Config = {
   mongoUrl: string;
   mongoDbName: string;
   logLevel: "info" | "warn" | "error"; // "debug" | "info" | "warn" | "error";
-  // firebaseProjectId: string;
-  // firebaseClientEmail: string;
-  // firebasePrivateKey: string;
+  firebase: {
+    projectId: string;
+    clientEmail: string;
+    privateKey: string;
+  };
 };
 
 

@@ -13,5 +13,7 @@ export const createClientBodySchema = z.object({
 // checking that all what will go to "controller" is valid
 // mongo have id for himself
 // uid is the user id from the firebase authentication
-//clinetId ( the user id from the firebase authentication)
+
+//clinetId ( the user id from the firebase authentication) ==> const { uid: clientId } = userRecord;
+ 
 //id ( the mongo id) look like "_id": ObjectId("xxxx"),
