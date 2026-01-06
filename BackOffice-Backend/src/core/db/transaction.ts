@@ -16,6 +16,7 @@ export const executeTransaction = async (
         const result = await operation(session);
         results.push(result);
       }
+      console.log("results#### in transaction", results);
       return results;
     });
   } finally {

@@ -12,6 +12,8 @@ export const createNewClient = async (req: Request, res: Response) => {
     const clientBody = req.body as CreateClientBodyType;
     //take the body from the request and call the service
     const clientResult = await createClientService(clientBody);
+
+    console.log("clientResult####", clientResult)
     //
     res.status(201).json(clientResult);
   } catch (error) {

@@ -18,9 +18,12 @@ export const createClientService = async (
   });
   console.log("clientRecordFirebase######", clientRecordFirebase);
 
-  //  Create client, flow, and phone numbeer in transaction 
+  //  Create client, flow, and phone numbeer in transaction
   // "All or nothing approach״
-  const [clientMongoId] = await executeTransaction([
+
+  const [clientMongoId, flowId, phoneIds] = await executeTransaction([
+    //executeTransaction return array of results
+    //clientMongoId is the first result
     (session) =>
       clientsMongoService.createClientInDb({
         clientId: clientRecordFirebase.uid,
@@ -28,10 +31,10 @@ export const createClientService = async (
         managedBy: newClient.managedBy || "",
         session,
       }),
-   
+
     (session) =>
       createFlowInDb({
-        clientId: clientRecordFirebase.uid,
+        clientId: clientRecordFirebase.uid,   
         session,
       }),
     (session) =>
@@ -43,11 +46,13 @@ export const createClientService = async (
   ]);
 
   console.log("clientRecordMongo#####", clientMongoId);
+  console.log("clientRecordMongo#####", clientMongoId);
+  console.log("flowId#####", flowId);
+  console.log("phoneIds#####", phoneIds);
 
   return {
-    id: clientMongoId.toString(), // MongoDB ObjectId (מומר ל-string)
+    id: clientMongoId.toString(), // MongoDB ObjectId
     clientId: clientRecordFirebase.uid, // Firebase UID
-    // email: client.email,
     credits: 0,
     managedBy: newClient.managedBy || "",
   };

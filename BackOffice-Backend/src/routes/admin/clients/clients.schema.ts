@@ -4,7 +4,6 @@ import { z } from "zod";
 export const createClientBodySchema = z.object({
   email: z.email(),
   password: z.string().min(8),
-  // phoneNumber: z.string().min(10),
   phoneNumber: z.array(z.string().min(10)).min(1),
   managedBy: z.string().optional(),
   uid: z.string().optional(),

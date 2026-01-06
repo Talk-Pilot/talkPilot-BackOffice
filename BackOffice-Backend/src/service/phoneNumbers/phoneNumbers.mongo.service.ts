@@ -13,18 +13,17 @@ const createPhoneNumbersInDb = async ({
   const db = getDb();
   const collection = db.collection("phone_numbers");
 
-
   const phoneNumberDocs = phoneNumber.map((phoneItem) => {
-  // how the single phone document looks like in mongo db
+    // how the single phone document looks like in mongo db
     const singlePhoneDocument = {
       clientId: clientId,
       phoneNumber: phoneItem,
     };
 
-    return singlePhoneDocument; 
+    return singlePhoneDocument;
   });
+  console.log("phoneNumberDocs####", phoneNumberDocs);
 
-  
   let result;
 
   if (session) {
@@ -32,7 +31,9 @@ const createPhoneNumbersInDb = async ({
   } else {
     result = await collection.insertMany(phoneNumberDocs);
   }
-
+  console.log("result####", result);
+  console.log("session####", session);
+  console.log("result.insertedIds####", result.insertedIds);
   return result.insertedIds;
 };
 
