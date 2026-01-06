@@ -13,12 +13,18 @@ const createPhoneNumbersInDb = async ({
   const db = getDb();
   const collection = db.collection("phone_numbers");
 
-  // יצירת מערך של אובייקטים - אחד לכל מספר טלפון
-  const phoneNumberDocs = phoneNumber.map((phone) => ({
-    clientId,
-    phoneNumber: phone,
-  }));
 
+  const phoneNumberDocs = phoneNumber.map((phoneItem) => {
+  // how the single phone document looks like in mongo db
+    const singlePhoneDocument = {
+      clientId: clientId,
+      phoneNumber: phoneItem,
+    };
+
+    return singlePhoneDocument; 
+  });
+
+  
   let result;
 
   if (session) {
