@@ -1,6 +1,17 @@
 import { getDb } from "../../core/db/mongo";
 import { ClientSession } from "mongodb";
 
+const convertPhoneNumberFormat = (phoneNumber: string) => {
+  // if admin will wrote phone number with ==972
+  //i dont need that function
+  //  its edge case
+  const cleanedPhoneNumber = phoneNumber.replace(/ /g, "");
+  if (cleanedPhoneNumber.startsWith("0")) {
+    return `+972${cleanedPhoneNumber.substring(1)}`;
+  }
+  return cleanedPhoneNumber;
+};
+
 const createPhoneNumbersInDb = async ({
   phoneNumber,
   clientId,
@@ -17,7 +28,7 @@ const createPhoneNumbersInDb = async ({
     // how the single phone document looks like in mongo db
     const singlePhoneDocument = {
       clientId: clientId,
-      phoneNumber: phoneItem,
+      phoneNumber: convertPhoneNumberFormat(phoneItem),
     };
 
     return singlePhoneDocument;
