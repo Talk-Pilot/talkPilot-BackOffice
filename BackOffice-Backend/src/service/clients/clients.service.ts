@@ -1,0 +1,54 @@
+// get the request body from the controller
+//like in the schema
+
+import { firebaseAuthService } from "../../core/auth/firebaseAuthService";
+import { CreateClientBodyType, CreateClientResultType } from "./clients.types";
+import { clientsMongoService } from "./clientsMongoService";
+import { executeTransaction } from "../../core/db/transaction";
+import { createFlowInDb } from "../flows/flow.service";
+import { phoneNumbersMongoService } from "../phoneNumbers/phoneNumbers.mongo.service";
+
+export const createClientService = async (
+  newClient: CreateClientBodyType
+): Promise<CreateClientResultType> => {
+  // 1. create user in firebase (must succeed first - outside transaction)
+  const clientRecordFirebase = await firebaseAuthService.createUser({
+    email: newClient.email,
+    password: newClient.password,
+  });
+  console.log("clientRecordFirebase######", clientRecordFirebase);
+
+  //  Create client, flow, and phone numbeer in transaction 
+  // "All or nothing approach״
+  const [clientMongoId] = await executeTransaction([
+    (session) =>
+      clientsMongoService.createClientInDb({
+        clientId: clientRecordFirebase.uid,
+        credits: 0,
+        managedBy: newClient.managedBy || "",
+        session,
+      }),
+   
+    (session) =>
+      createFlowInDb({
+        clientId: clientRecordFirebase.uid,
+        session,
+      }),
+    (session) =>
+      phoneNumbersMongoService.createPhoneNumbersInDb({
+        clientId: clientRecordFirebase.uid,
+        phoneNumber: newClient.phoneNumber,
+        session,
+      }),
+  ]);
+
+  console.log("clientRecordMongo#####", clientMongoId);
+
+  return {
+    id: clientMongoId.toString(), // MongoDB ObjectId (מומר ל-string)
+    clientId: clientRecordFirebase.uid, // Firebase UID
+    // email: client.email,
+    credits: 0,
+    managedBy: newClient.managedBy || "",
+  };
+};

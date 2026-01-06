@@ -1,23 +1,22 @@
 import { MongoClient, Db } from "mongodb";
 import { config } from "../config";
 
-let client: MongoClient | null = null;
+let mongoClient: MongoClient | null = null;
 let db: Db | null = null;
 
 //Connects to MongoDB.
 export const connectToMongo = async (): Promise<Db> => {
-  // falsy - if null we can keep going to connect to mongo
   if (db) {
     return db;
   }
 
-  client = new MongoClient(config.mongoUrl);
+  mongoClient = new MongoClient(config.mongoUrl);
 
-  await client.connect();
+  await mongoClient.connect();
 
-  db = client.db(config.mongoDbName);
+  db = mongoClient.db(config.mongoDbName);
 
-  console.log("Successfully Connected to MongoDB");
+  console.log("Successfully Connected to MongoDB", config.mongoDbName);
 
   return db;
 };
@@ -32,13 +31,20 @@ export const getDb = (): Db => {
   return db;
 };
 
+export const getClient = (): MongoClient => {
+  if (!mongoClient) {
+    throw new Error("MongoDB mongoClient is not connected.");
+  }
+  return mongoClient;
+};
+
 export const disconnectFromMongo = async (): Promise<void> => {
-  if (!client) {
+  if (!mongoClient) {
     return;
   }
 
-  await client.close();
-  client = null;
+  await mongoClient.close();
+  mongoClient = null;
   db = null;
 
   console.log("Disconnected from MongoDB");

@@ -4,8 +4,8 @@
 // return the response
 
 import { Request, Response } from "express";
-import { CreateClientBodyType } from "./clients.types";
-import { createClientService } from "./clients.service";
+import { CreateClientBodyType } from "../../../service/clients/clients.types";
+import { createClientService } from "../../../service/clients/clients.service";
 
 export const createNewClient = async (req: Request, res: Response) => {
   try {
