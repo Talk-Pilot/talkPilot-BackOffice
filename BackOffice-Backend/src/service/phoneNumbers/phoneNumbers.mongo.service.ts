@@ -1,5 +1,5 @@
 import { getDb } from "../../core/db/mongo";
-import { ClientSession } from "mongodb";
+import { ClientSession, ReturnDocument } from "mongodb";
 
 const convertPhoneNumberFormat = (phoneNumber: string) => {
   // if admin will wrote phone number with ==972
@@ -48,6 +48,37 @@ const createPhoneNumbersInDb = async ({
   return result.insertedIds;
 };
 
+const replacePhoneNumbersInDb = async ({
+  clientId,
+  phoneNumber,
+}: {
+  clientId: string;
+  phoneNumber: string[];
+  session?: ClientSession;
+}) => {
+  const db = getDb();
+  const collection = db.collection("phone_numbers");
+  const convertedPhones = phoneNumber.map((phone) =>
+    convertPhoneNumberFormat(phone)
+  );
+  const result = await collection.findOneAndUpdate(
+    { clientId: clientId },
+    { $set: { phone_number: convertedPhones } },
+    { returnDocument: 'after' }
+  );
+  return result;
+};
+
+const getPhoneNumbersByClientId = async (clientId: string) => {
+  const db = getDb();
+  const collection = db.collection("phone_numbers");
+  const result = await collection.findOne({ clientId: clientId });
+  return result;
+};
+
 export const phoneNumbersMongoService = {
   createPhoneNumbersInDb,
+  convertPhoneNumberFormat,
+  replacePhoneNumbersInDb,
+  getPhoneNumbersByClientId,
 };

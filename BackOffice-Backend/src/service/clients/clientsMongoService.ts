@@ -41,7 +41,8 @@ const getAllClients = async () => {
   return clients;
 };
 
-export const clientsMongoService = {
+
+  export const clientsMongoService = {
   createClientInDb,
   getAllClients,
 };

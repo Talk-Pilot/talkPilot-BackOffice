@@ -3,8 +3,8 @@
 
 import { Router } from "express";
 import { validateBody } from "./validate";
-import { createClientBodySchema } from "./clients.schema";
-import { createNewClient, getAllClients } from "./clients.controller";
+import { createClientBodySchema, updateClientBodySchema } from "./clients.schema";
+import { createNewClient, getAllClients ,updateClientByClientId} from "./clients.controller";
 
 const clientsRouter = Router();
 
@@ -15,8 +15,9 @@ clientsRouter.post(
   validateBody(createClientBodySchema),
   createNewClient
 );
+clientsRouter.put("/clientId/:clientId", validateBody(updateClientBodySchema), updateClientByClientId);
 
-// clientsRouter.put("/:id", validateBody(updateClientBodySchema), updateClient);
+
 // clientsRouter.get("/:id", getClientById);
 // clientsRouter.delete("/:id", deleteClient);
 

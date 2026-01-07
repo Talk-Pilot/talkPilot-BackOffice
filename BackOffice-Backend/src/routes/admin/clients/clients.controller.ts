@@ -4,9 +4,8 @@
 // return the response
 
 import { Request, Response } from "express";
-import { CreateClientBodyType } from "../../../service/clients/clients.types";
-import { createClientService } from "../../../service/clients/clients.service";
-import { getAllClientsService } from "../../../service/clients/clients.service";
+import { CreateClientBodyType, UpdateClientBodyType } from "../../../service/clients/clients.types";
+import { getAllClientsService, createClientService ,updateClientByClientIdService} from "../../../service/clients/clients.service";
 
 const createNewClient = async (req: Request, res: Response) => {
   try {
@@ -32,4 +31,21 @@ const getAllClients = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to get clients" });
   }
 };
-export { createNewClient, getAllClients };
+
+
+const updateClientByClientId = async (req: Request, res: Response) => {
+  try {
+    const clientId = req.params.clientId;  
+    if (!clientId) {
+      return res.status(400).json({ message: "Client ID is required" });
+    }
+    const clientBody = req.body as UpdateClientBodyType;
+    console.log("clientBody####", clientBody);
+    const clientResult = await updateClientByClientIdService(clientBody, clientId);
+    return res.status(200).json(clientResult);
+  } catch (error) {
+    console.error("Database error:", error);
+    return res.status(500).json({ message: "Failed to update client" });
+  }
+};
+export { createNewClient, getAllClients, updateClientByClientId };

@@ -9,7 +9,27 @@ export const createClientBodySchema = z.object({
   uid: z.string().optional(),
 });
 
-
+export const updateClientBodySchema = z.object({
+  phoneNumber: z.array(z.string().min(10)).min(1).optional(),
+  flow: z
+    .object({
+      // ← במקום flowId, לקבל את כל ה-flow
+      flowName: z.string(),
+      interactions: z.array(
+        z.object({
+          id: z.string(),
+          type: z.string(),
+          name: z.string(),
+          text: z.string(),
+          position: z.object({ x: z.number(), y: z.number() }),
+          successStatus: z.string(),
+          children: z.array(z.string()),
+        })
+      ),
+    })
+    .optional(),
+  phoneOperation: z.enum(["replace", "add"]).optional(),
+});
 
 // checking that all what will go to "controller" is valid
 // mongo have id for himself

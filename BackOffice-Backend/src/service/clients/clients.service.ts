@@ -2,10 +2,15 @@
 //like in the schema
 
 import { firebaseAuthService } from "../../core/auth/firebaseAuthService";
-import { CreateClientBodyType, CreateClientResultType } from "./clients.types";
+import {
+  CreateClientBodyType,
+  CreateClientResultType,
+  UpdateClientBodyType,
+  UpdateClientResultType,
+} from "./clients.types";
 import { clientsMongoService } from "./clientsMongoService";
 import { executeTransaction } from "../../core/db/transaction";
-import { createFlowInDb } from "../flows/flow.service";
+import { createFlowInDb, updateFlowInDb } from "../flows/flow.mongo.service";
 import { phoneNumbersMongoService } from "../phoneNumbers/phoneNumbers.mongo.service";
 
 const createClientService = async (
@@ -62,4 +67,46 @@ const getAllClientsService = async () => {
   const clients = await clientsMongoService.getAllClients();
   return clients;
 };
-export { getAllClientsService, createClientService };
+
+const updateClientByClientIdService = async (
+  clientBody: UpdateClientBodyType,
+  clientId: string
+): Promise<UpdateClientResultType> => {
+  let updatedPhoneNumbers = null;
+  let updatedFlow = null;
+  
+  // i want to check if user put phonenumbers in the body for update
+  if (clientBody.phoneNumber) {
+    const operation = clientBody.phoneOperation;
+
+    if (operation === "add") {
+      await phoneNumbersMongoService.createPhoneNumbersInDb({
+        clientId: clientId,
+        phoneNumber: clientBody.phoneNumber,
+      });
+      updatedPhoneNumbers = await phoneNumbersMongoService.getPhoneNumbersByClientId(clientId);
+    } else if (operation === "replace") {
+      updatedPhoneNumbers = await phoneNumbersMongoService.replacePhoneNumbersInDb({
+        clientId: clientId,
+        phoneNumber: clientBody.phoneNumber,
+      });
+    }
+  }
+// i want to check if user put flow in the body for update
+  if (clientBody.flow) {
+    updatedFlow = await updateFlowInDb({
+      clientId: clientId,
+      flowData: clientBody.flow, 
+    });
+  }
+  return {
+    phoneNumber: updatedPhoneNumbers,
+    flow: updatedFlow,
+  };
+};
+
+export {
+  getAllClientsService,
+  createClientService,
+  updateClientByClientIdService,
+};

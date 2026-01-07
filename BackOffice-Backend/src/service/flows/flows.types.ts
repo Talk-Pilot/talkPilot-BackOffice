@@ -14,3 +14,9 @@ export type CreateFlowResultType = {
   name: string;
   interactions: Array<InteractionType>;
 };
+
+export type FlowDocumentType = {
+  clientId: string;
+  flowName: string;
+  interactions: Array<InteractionType>;
+};
