@@ -8,7 +8,7 @@ import { executeTransaction } from "../../core/db/transaction";
 import { createFlowInDb } from "../flows/flow.service";
 import { phoneNumbersMongoService } from "../phoneNumbers/phoneNumbers.mongo.service";
 
-export const createClientService = async (
+const createClientService = async (
   newClient: CreateClientBodyType
 ): Promise<CreateClientResultType> => {
   // 1. create user in firebase (must succeed first - outside transaction)
@@ -34,7 +34,7 @@ export const createClientService = async (
 
     (session) =>
       createFlowInDb({
-        clientId: clientRecordFirebase.uid,   
+        clientId: clientRecordFirebase.uid,
         session,
       }),
     (session) =>
@@ -57,3 +57,9 @@ export const createClientService = async (
     managedBy: newClient.managedBy || "",
   };
 };
+
+const getAllClientsService = async () => {
+  const clients = await clientsMongoService.getAllClients();
+  return clients;
+};
+export { getAllClientsService, createClientService };

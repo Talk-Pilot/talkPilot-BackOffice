@@ -31,12 +31,17 @@ const createClientInDb = async ({
     result = await collection.insertOne(client);
   }
   // insert the object (from front ) and put it the db
-  console.log("clientRecordMongo####", client);
-  console.log("resultRecordMongo####", result);
-  console.log("result.insertedId####", result.insertedId);
   return result.insertedId;
+};
+
+const getAllClients = async () => {
+  const db = getDb();
+  const collection = db.collection("clients");
+  const clients = await collection.find().toArray();
+  return clients;
 };
 
 export const clientsMongoService = {
   createClientInDb,
+  getAllClients,
 };

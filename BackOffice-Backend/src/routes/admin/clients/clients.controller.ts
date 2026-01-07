@@ -6,14 +6,15 @@
 import { Request, Response } from "express";
 import { CreateClientBodyType } from "../../../service/clients/clients.types";
 import { createClientService } from "../../../service/clients/clients.service";
+import { getAllClientsService } from "../../../service/clients/clients.service";
 
-export const createNewClient = async (req: Request, res: Response) => {
+const createNewClient = async (req: Request, res: Response) => {
   try {
     const clientBody = req.body as CreateClientBodyType;
     //take the body from the request and call the service
     const clientResult = await createClientService(clientBody);
 
-    console.log("clientResult####", clientResult)
+    console.log("clientResult####", clientResult);
     //
     res.status(201).json(clientResult);
   } catch (error) {
@@ -22,4 +23,13 @@ export const createNewClient = async (req: Request, res: Response) => {
   }
 };
 
-// responseble only for the http request
+const getAllClients = async (req: Request, res: Response) => {
+  try {
+    const clients = await getAllClientsService();
+    res.status(200).json(clients);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ message: "Failed to get clients" });
+  }
+};
+export { createNewClient, getAllClients };

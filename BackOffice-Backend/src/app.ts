@@ -7,10 +7,8 @@ app.use(express.json());
 
 app.use(adminAuth);
 
-// app.use("/", getAllClients);
-
 app.use("/clients", clientsRouter);
 
 export default app;
 
-//middlewares route handlers
+

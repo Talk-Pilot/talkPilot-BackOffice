@@ -4,13 +4,18 @@
 import { Router } from "express";
 import { validateBody } from "./validate";
 import { createClientBodySchema } from "./clients.schema";
-import { createNewClient } from "./clients.controller";
+import { createNewClient, getAllClients } from "./clients.controller";
 
 const clientsRouter = Router();
 
-clientsRouter.post("/new", validateBody(createClientBodySchema), createNewClient);
+clientsRouter.get("/all", getAllClients);
 
-// clientsRouter.get("/all", getAllClients);
+clientsRouter.post(
+  "/new",
+  validateBody(createClientBodySchema),
+  createNewClient
+);
+
 // clientsRouter.put("/:id", validateBody(updateClientBodySchema), updateClient);
 // clientsRouter.get("/:id", getClientById);
 // clientsRouter.delete("/:id", deleteClient);
