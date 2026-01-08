@@ -1,7 +1,7 @@
 export type Config = {
   port: number;
   nodeEnv: "development" | "production" | "local";
-  adminToken: string;
+  adminUid: string;
   mongoUrl: string;
   mongoDbName: string;
   logLevel: "info" | "warn" | "error"; // "debug" | "info" | "warn" | "error";
@@ -11,5 +11,3 @@ export type Config = {
     privateKey: string;
   };
 };
-
-

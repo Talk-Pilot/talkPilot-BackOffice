@@ -64,6 +64,7 @@ const createClientService = async (
 };
 
 const getAllClientsService = async () => {
+  console.log("🔥 getAllClientsService called");
   const clients = await clientsMongoService.getAllClients();
   return clients;
 };
@@ -80,7 +81,7 @@ const updateClientByClientIdService = async (
     const operation = clientBody.phoneOperation;
 
     if (operation === "add") {
-        updatedPhoneNumbers = await phoneNumbersMongoService.addPhoneNumbersInDb({
+      updatedPhoneNumbers = await phoneNumbersMongoService.addPhoneNumbersInDb({
         clientId: clientId,
         phoneNumber: clientBody.phoneNumber,
       });

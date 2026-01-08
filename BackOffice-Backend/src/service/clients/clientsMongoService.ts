@@ -35,14 +35,15 @@ const createClientInDb = async ({
 };
 
 const getAllClients = async () => {
+  console.log("🔥 getAllClients mongoService called");
   const db = getDb();
   const collection = db.collection("clients");
   const clients = await collection.find().toArray();
+  console.log("🔥 clients", clients);
   return clients;
 };
 
-
-  export const clientsMongoService = {
+export const clientsMongoService = {
   createClientInDb,
   getAllClients,
 };

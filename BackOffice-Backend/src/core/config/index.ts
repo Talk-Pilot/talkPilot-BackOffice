@@ -5,15 +5,15 @@ dotenv.config();
 
 const rawPort = process.env.PORT;
 const rawNodeEnv = process.env.NODE_ENV;
-const rawAdminToken = process.env.ADMIN_TOKEN;
 const rawMongoUrl = process.env.MONGO_URI;
 const rawMongoDbName = process.env.MONGO_DB_NAME;
 const rawLogLevel = process.env.LOG_LEVEL;
 const rawFirebaseProjectId = process.env.FIREBASE_PROJECT_ID;
 const rawFirebaseClientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 const rawFirebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;
+const rawAdminUid = process.env.ADMIN_UID;
 
-// config validation b4 app starts for envierment values -  for mongoUrl, adminToken and MongodbName
+// config validation b4 app starts for envierment values -  for mongoUrl, adminUid and MongodbName
 const getRequiredEnv = (envVariableName: string): string => {
   const envValue = process.env[envVariableName];
 
@@ -59,11 +59,11 @@ if (nodeEnv === "production") {
 
 firebase.privateKey = firebase.privateKey.replace(/\\n/g, "\n");
 
-let adminToken: string;
+let adminUid: string;
 if (nodeEnv === "production") {
-  adminToken = getRequiredEnv("ADMIN_TOKEN");
+  adminUid = getRequiredEnv("ADMIN_UID");
 } else {
-  adminToken = rawAdminToken || "dev-admin-token";
+  adminUid = rawAdminUid || "";
 }
 
 let mongoDbName: string;
@@ -95,10 +95,10 @@ if (
 export const config: Config = {
   port,
   nodeEnv,
-  adminToken,
   mongoUrl,
   mongoDbName,
   logLevel,
+  adminUid,
   firebase,
 };
 
