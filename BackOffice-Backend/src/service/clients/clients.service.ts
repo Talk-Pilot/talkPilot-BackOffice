@@ -74,33 +74,33 @@ const updateClientByClientIdService = async (
 ): Promise<UpdateClientResultType> => {
   let updatedPhoneNumbers = null;
   let updatedFlow = null;
-  
+
   // i want to check if user put phonenumbers in the body for update
   if (clientBody.phoneNumber) {
     const operation = clientBody.phoneOperation;
 
     if (operation === "add") {
-      await phoneNumbersMongoService.createPhoneNumbersInDb({
+        updatedPhoneNumbers = await phoneNumbersMongoService.addPhoneNumbersInDb({
         clientId: clientId,
         phoneNumber: clientBody.phoneNumber,
       });
-      updatedPhoneNumbers = await phoneNumbersMongoService.getPhoneNumbersByClientId(clientId);
     } else if (operation === "replace") {
-      updatedPhoneNumbers = await phoneNumbersMongoService.replacePhoneNumbersInDb({
-        clientId: clientId,
-        phoneNumber: clientBody.phoneNumber,
-      });
+      updatedPhoneNumbers =
+        await phoneNumbersMongoService.replacePhoneNumbersInDb({
+          clientId: clientId,
+          phoneNumber: clientBody.phoneNumber,
+        });
     }
   }
-// i want to check if user put flow in the body for update
+  // i want to check if user put flow in the body for update
   if (clientBody.flow) {
     updatedFlow = await updateFlowInDb({
       clientId: clientId,
-      flowData: clientBody.flow, 
+      flowData: clientBody.flow,
     });
   }
   return {
-    phoneNumber: updatedPhoneNumbers,
+    phoneNumbers: updatedPhoneNumbers,
     flow: updatedFlow,
   };
 };

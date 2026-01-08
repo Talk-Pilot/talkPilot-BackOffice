@@ -76,9 +76,44 @@ const getPhoneNumbersByClientId = async (clientId: string) => {
   return result;
 };
 
+const addPhoneNumbersInDb = async ({
+  clientId,
+  phoneNumber,
+}: {
+  clientId: string;
+  phoneNumber: string[];
+}) => {
+  const db = getDb();
+  const collection = db.collection("phone_numbers");
+  
+  // 1. משיכת האובייקט הקיים
+  const existing = await collection.findOne({ clientId: clientId });
+  
+  // 2. המרת הטלפונים החדשים לפורמט בינלאומי
+  const convertedPhones = phoneNumber.map((phone) =>
+    convertPhoneNumberFormat(phone)
+  );
+  
+
+  const updatedPhones = [
+    ...(existing?.phone_number || []), 
+    ...convertedPhones                   
+  ];
+  
+ 
+  const result = await collection.findOneAndUpdate(
+    { clientId: clientId },
+    { $set: { phone_number: updatedPhones } },
+    { returnDocument: 'after', upsert: true }
+  );
+  
+  return result;
+};
+
 export const phoneNumbersMongoService = {
   createPhoneNumbersInDb,
   convertPhoneNumberFormat,
   replacePhoneNumbersInDb,
   getPhoneNumbersByClientId,
+  addPhoneNumbersInDb,
 };

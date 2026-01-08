@@ -16,6 +16,6 @@ export type CreateClientResultType = {
 export type UpdateClientBodyType = z.infer<typeof updateClientBodySchema>;
 
 export type UpdateClientResultType = {
-  phoneNumber?: WithId<Document> | null;
+  phoneNumbers?: WithId<Document> | null;
   flow?: WithId<Document> | null;  
 };
