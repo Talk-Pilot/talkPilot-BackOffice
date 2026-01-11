@@ -3,16 +3,16 @@ import { DEMO_FLOW_TEMPLATE } from "./flow.demoFlow";
 import { ClientSession } from "mongodb";
 
 const createFlowInDb = async ({
-  clientId,
+  // clientId,
   session,
 }: {
-  clientId: string;
+  // clientId: string;
   session: ClientSession;
 }) => {
   const db = getDb();
   const collection = db.collection("flows");
   const flowDoc = {
-    clientId,
+    // clientId,
     ...DEMO_FLOW_TEMPLATE,
   };
 

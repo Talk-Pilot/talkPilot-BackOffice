@@ -1,5 +1,5 @@
 import { getDb } from "../../core/db/mongo";
-import { ClientSession, ReturnDocument } from "mongodb";
+import { ClientSession, ObjectId, ReturnDocument } from "mongodb";
 
 const convertPhoneNumberFormat = (phoneNumber: string) => {
   // if admin will wrote phone number with ==972
@@ -16,19 +16,21 @@ const createPhoneNumbersInDb = async ({
   phoneNumber,
   clientId,
   session,
+  flowId,
 }: {
   phoneNumber: string[];
   clientId: string;
+  flowId: ObjectId;
   session: ClientSession;
 }) => {
   const db = getDb();
   const collection = db.collection("phone_numbers");
 
   const phoneNumberDocs = phoneNumber.map((phoneItem) => {
-    // how the single phone document looks like in mongo db
     const singlePhoneDocument = {
       clientId: clientId,
       phoneNumber: convertPhoneNumberFormat(phoneItem),
+      flowId: flowId,
     };
 
     return singlePhoneDocument;
@@ -77,10 +79,8 @@ const addPhoneNumbersInDb = async ({
   const db = getDb();
   const collection = db.collection("phone_numbers");
 
-  // 1. משיכת האובייקט הקיים
   const existing = await collection.findOne({ clientId: clientId });
 
-  // 2. המרת הטלפונים החדשים לפורמט בינלאומי
   const convertedPhones = phoneNumber.map((phone) =>
     convertPhoneNumberFormat(phone)
   );

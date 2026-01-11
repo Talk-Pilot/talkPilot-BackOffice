@@ -2,9 +2,11 @@ import { ClientSession, TransactionOptions } from "mongodb";
 import { getClient } from "./mongo";
 
 export const executeTransaction = async (
-  operations: Array<(session: ClientSession) => Promise<any>>
+  operations: Array<
+    (session: ClientSession, previousResults?: any[]) => Promise<any>
+  >
 ): Promise<any[]> => {
-    //get mongo client
+  //get mongo client
   const client = getClient();
   //we start a session
   const session = client.startSession();
@@ -13,7 +15,7 @@ export const executeTransaction = async (
     return await session.withTransaction(async () => {
       const results = [];
       for (const operation of operations) {
-        const result = await operation(session);
+        const result = await operation(session, results);
         results.push(result);
       }
       console.log("results#### in transaction", results);
@@ -23,4 +25,3 @@ export const executeTransaction = async (
     await session.endSession();
   }
 };
-

@@ -14,7 +14,6 @@ export const createUser = async ({
     password,
   });
   // Add admin claim automatically
-  await setAdmin(userRecord.uid);
   console.log("userRecord#####", userRecord);
   return userRecord;
 };
@@ -23,6 +22,6 @@ export const deleteUserByUid = async (uid: string) => {
   await admin.auth().deleteUser(uid);
 };
 
-export const setAdmin = async (uid: string) => {
-  await admin.auth().setCustomUserClaims(uid, { admin: true });
-};
+// export const setAdmin = async (uid: string) => {
+//   await admin.auth().setCustomUserClaims(uid, { admin: true });
+// };

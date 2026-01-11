@@ -31,7 +31,7 @@ const createClientService = async (
   //  Create client, flow, and phone numbeer in transaction
   // "All or nothing approach״
 
-  const [clientMongoId, flowId, phoneIds] = await executeTransaction([
+  const [clientMongoId] = await executeTransaction([
     //executeTransaction return array of results
     //clientMongoId is the first result
     (session) =>
@@ -41,24 +41,18 @@ const createClientService = async (
         managedBy: newClient.managedBy || "",
         session,
       }),
-
     (session) =>
       flowsMongoService.createFlowInDb({
-        clientId: clientRecordFirebase.uid,
         session,
       }),
-    (session) =>
+    (session, previousResults) =>
       phoneNumbersMongoService.createPhoneNumbersInDb({
         clientId: clientRecordFirebase.uid,
         phoneNumber: newClient.phoneNumber,
+        flowId: previousResults?.[1],
         session,
       }),
   ]);
-
-  console.log("clientRecordMongo#####", clientMongoId);
-  console.log("clientRecordMongo#####", clientMongoId);
-  console.log("flowId#####", flowId);
-  console.log("phoneIds#####", phoneIds);
 
   return {
     id: clientMongoId.toString(), // MongoDB ObjectId
@@ -124,16 +118,6 @@ const deleteClientByClientIdService = async (clientId: string) => {
   // Firebase delete outside transaction (can't be in MongoDB transaction)
   await deleteUserByUid(clientId);
 };
-
-// const deleteClientByClientIdService = async (clientId: string) => {
-//   await clientsMongoService.deleteClientInDb(clientId);
-//   await phoneNumbersMongoService.deletePhoneNumbersInDb(clientId);
-//   await flowsMongoService.deleteFlowInDb(clientId);
-//   await firebaseAuthService.deleteUserByUid(clientId);
-//   await callsMongoService.deleteResultByID(clientId);
-//   await sessionsMongoService.deleteSessionByID(clientId);
-//   await callsMongoService.deleteResultByID(clientId);
-// };
 
 export {
   getAllClientsService,
