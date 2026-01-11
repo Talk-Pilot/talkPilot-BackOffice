@@ -12,6 +12,8 @@ import { clientsMongoService } from "./clientsMongoService";
 import { executeTransaction } from "../../core/db/transaction";
 import { flowsMongoService } from "../flows/flow.mongo.service";
 import { phoneNumbersMongoService } from "../phoneNumbers/phoneNumbers.mongo.service";
+import { sessionsMongoService } from "../sessions/sessions.mongo.servise";
+import { callsMongoService } from "../calls/calls.mongo.servise";
 
 const createClientService = async (
   newClient: CreateClientBodyType
@@ -94,7 +96,7 @@ const updateClientByClientIdService = async (
   }
   // i want to check if user put flow in the body for update
   if (clientBody.flow) {
-    updatedFlow = await updateFlowInDb({
+    updatedFlow = await flowsMongoService.updateFlowInDb({
       clientId: clientId,
       flowData: clientBody.flow,
     });
@@ -106,15 +108,33 @@ const updateClientByClientIdService = async (
 };
 
 const deleteClientByClientIdService = async (clientId: string) => {
-  await clientsMongoService.deleteClientInDb(clientId);
-  await phoneNumbersMongoService.deletePhoneNumbersInDb(clientId);
-  await flowsMongoService.deleteFlowInDb(clientId);
+  // All MongoDB deletions in transaction (All or nothing)
+  await executeTransaction([
+    (session) => clientsMongoService.deleteClientInDb({ clientId, session }),
+    (session) =>
+      phoneNumbersMongoService.deletePhoneNumbersInDb({ clientId, session }),
+    (session) => flowsMongoService.deleteFlowInDb({ clientId, session }),
+    (session) => sessionsMongoService.deleteSessionByID({ clientId, session }),
+    (session) => callsMongoService.deleteResultByID({ clientId, session }),
+  ]);
+
+  // Firebase delete outside transaction (can't be in MongoDB transaction)
   await firebaseAuthService.deleteUserByUid(clientId);
 };
+
+// const deleteClientByClientIdService = async (clientId: string) => {
+//   await clientsMongoService.deleteClientInDb(clientId);
+//   await phoneNumbersMongoService.deletePhoneNumbersInDb(clientId);
+//   await flowsMongoService.deleteFlowInDb(clientId);
+//   await firebaseAuthService.deleteUserByUid(clientId);
+//   await callsMongoService.deleteResultByID(clientId);
+//   await sessionsMongoService.deleteSessionByID(clientId);
+//   await callsMongoService.deleteResultByID(clientId);
+// };
 
 export {
   getAllClientsService,
   createClientService,
   updateClientByClientIdService,
-  deleteClientByClientIdService
+  deleteClientByClientIdService,
 };

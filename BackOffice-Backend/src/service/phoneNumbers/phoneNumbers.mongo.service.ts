@@ -19,7 +19,7 @@ const createPhoneNumbersInDb = async ({
 }: {
   phoneNumber: string[];
   clientId: string;
-  session?: ClientSession;
+  session: ClientSession;
 }) => {
   const db = getDb();
   const collection = db.collection("phone_numbers");
@@ -34,17 +34,8 @@ const createPhoneNumbersInDb = async ({
     return singlePhoneDocument;
   });
   console.log("phoneNumberDocs####", phoneNumberDocs);
+  const result = await collection.insertMany(phoneNumberDocs, { session });
 
-  let result;
-
-  if (session) {
-    result = await collection.insertMany(phoneNumberDocs, { session });
-  } else {
-    result = await collection.insertMany(phoneNumberDocs);
-  }
-  console.log("result####", result);
-  console.log("session####", session);
-  console.log("result.insertedIds####", result.insertedIds);
   return result.insertedIds;
 };
 
@@ -64,7 +55,7 @@ const replacePhoneNumbersInDb = async ({
   const result = await collection.findOneAndUpdate(
     { clientId: clientId },
     { $set: { phone_number: convertedPhones } },
-    { returnDocument: 'after' }
+    { returnDocument: "after" }
   );
   return result;
 };
@@ -85,34 +76,35 @@ const addPhoneNumbersInDb = async ({
 }) => {
   const db = getDb();
   const collection = db.collection("phone_numbers");
-  
+
   // 1. משיכת האובייקט הקיים
   const existing = await collection.findOne({ clientId: clientId });
-  
+
   // 2. המרת הטלפונים החדשים לפורמט בינלאומי
   const convertedPhones = phoneNumber.map((phone) =>
     convertPhoneNumberFormat(phone)
   );
-  
 
-  const updatedPhones = [
-    ...(existing?.phone_number || []), 
-    ...convertedPhones                   
-  ];
-  
- 
+  const updatedPhones = [...(existing?.phone_number || []), ...convertedPhones];
+
   const result = await collection.findOneAndUpdate(
     { clientId: clientId },
     { $set: { phone_number: updatedPhones } },
-    { returnDocument: 'after', upsert: true }
+    { returnDocument: "after", upsert: true }
   );
-  
+
   return result;
 };
-const deletePhoneNumbersInDb = async (clientId: string) => {
+const deletePhoneNumbersInDb = async ({
+  clientId,
+  session,
+}: {
+  clientId: string;
+  session: ClientSession;
+}) => {
   const db = getDb();
   const collection = db.collection("phone_numbers");
-  await collection.deleteMany({ clientId: clientId });
+  await collection.deleteOne({ clientId: clientId }, { session });
 };
 
 export const phoneNumbersMongoService = {

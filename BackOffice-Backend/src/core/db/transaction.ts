@@ -1,4 +1,4 @@
-import { ClientSession } from "mongodb";
+import { ClientSession, TransactionOptions } from "mongodb";
 import { getClient } from "./mongo";
 
 export const executeTransaction = async (
@@ -23,3 +23,4 @@ export const executeTransaction = async (
     await session.endSession();
   }
 };
+

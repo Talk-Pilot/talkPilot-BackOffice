@@ -15,7 +15,7 @@ const createClientInDb = async ({
   clientId: string;
   managedBy: string;
   credits: number;
-  session?: ClientSession;
+  session: ClientSession;
 }) => {
   const db = getDb();
   const collection = db.collection("clients");
@@ -24,13 +24,7 @@ const createClientInDb = async ({
     managedBy,
     credits,
   };
-  let result;
-  if (session) {
-    result = await collection.insertOne(client, { session });
-  } else {
-    result = await collection.insertOne(client);
-  }
-  // insert the object (from front ) and put it the db
+  const result = await collection.insertOne(client, { session });
   return result.insertedId;
 };
 
@@ -42,10 +36,16 @@ const getAllClients = async () => {
   return clients;
 };
 
-const deleteClientInDb = async (clientId: string) => {
+const deleteClientInDb = async ({
+  clientId,
+  session,
+}: {
+  clientId: string;
+  session: ClientSession;
+}) => {
   const db = getDb();
   const collection = db.collection("clients");
-  await collection.deleteOne({ clientId: clientId });
+  await collection.deleteOne({ clientId: clientId }, { session });
 };
 
 export const clientsMongoService = {
