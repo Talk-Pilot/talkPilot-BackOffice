@@ -2,22 +2,27 @@
 
 import admin from "../../core/auth/firebase";
 
-export const firebaseAuthService = {
-  createUser: async ({
+export const createUser = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
+  const userRecord = await admin.auth().createUser({
     email,
     password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    const userRecord = await admin.auth().createUser({
-      email,
-      password,
-    });
-    console.log("userRecord#####", userRecord);
-    return userRecord;
-  },
-  deleteUserByUid: async (uid: string) => {
-    await admin.auth().deleteUser(uid);
-  },
+  });
+  // Add admin claim automatically
+  await setAdmin(userRecord.uid);
+  console.log("userRecord#####", userRecord);
+  return userRecord;
+};
+
+export const deleteUserByUid = async (uid: string) => {
+  await admin.auth().deleteUser(uid);
+};
+
+export const setAdmin = async (uid: string) => {
+  await admin.auth().setCustomUserClaims(uid, { admin: true });
 };

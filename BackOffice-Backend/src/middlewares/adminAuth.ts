@@ -29,7 +29,7 @@ export const adminAuth = async (
     const decodedToken = await admin.auth().verifyIdToken(accessToken);
     console.log("decodedToken.uid:", decodedToken.uid);
     console.log("config.adminUid:", config.adminUid);
-    if (decodedToken.uid !== config.adminUid) {
+    if (decodedToken.admin !== true) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     req.headers["x-clientid"] = decodedToken.uid;

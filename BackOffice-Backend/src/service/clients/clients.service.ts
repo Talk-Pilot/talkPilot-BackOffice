@@ -1,7 +1,10 @@
 // get the request body from the controller
 //like in the schema
 
-import { firebaseAuthService } from "../../core/auth/firebaseAuthService";
+import {
+  createUser,
+  deleteUserByUid,
+} from "../../core/auth/firebaseAuthService";
 import {
   CreateClientBodyType,
   CreateClientResultType,
@@ -19,7 +22,7 @@ const createClientService = async (
   newClient: CreateClientBodyType
 ): Promise<CreateClientResultType> => {
   // 1. create user in firebase (must succeed first - outside transaction)
-  const clientRecordFirebase = await firebaseAuthService.createUser({
+  const clientRecordFirebase = await createUser({
     email: newClient.email,
     password: newClient.password,
   });
@@ -34,7 +37,7 @@ const createClientService = async (
     (session) =>
       clientsMongoService.createClientInDb({
         clientId: clientRecordFirebase.uid,
-        credits: 0,
+        credits: 1000000,
         managedBy: newClient.managedBy || "",
         session,
       }),
@@ -60,7 +63,7 @@ const createClientService = async (
   return {
     id: clientMongoId.toString(), // MongoDB ObjectId
     clientId: clientRecordFirebase.uid, // Firebase UID
-    credits: 0,
+    credits: 1000000,
     managedBy: newClient.managedBy || "",
   };
 };
@@ -119,7 +122,7 @@ const deleteClientByClientIdService = async (clientId: string) => {
   ]);
 
   // Firebase delete outside transaction (can't be in MongoDB transaction)
-  await firebaseAuthService.deleteUserByUid(clientId);
+  await deleteUserByUid(clientId);
 };
 
 // const deleteClientByClientIdService = async (clientId: string) => {
