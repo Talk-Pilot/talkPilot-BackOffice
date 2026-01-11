@@ -3,8 +3,16 @@
 
 import { Router } from "express";
 import { validateBody } from "./validate";
-import { createClientBodySchema, updateClientBodySchema } from "./clients.schema";
-import { createNewClient, getAllClients ,updateClientByClientId} from "./clients.controller";
+import {
+  createClientBodySchema,
+  updateClientBodySchema,
+} from "./clients.schema";
+import {
+  createNewClient,
+  getAllClients,
+  updateClientByClientId,
+  deleteClientByClientIdController,
+} from "./clients.controller";
 
 const clientsRouter = Router();
 
@@ -15,10 +23,13 @@ clientsRouter.post(
   validateBody(createClientBodySchema),
   createNewClient
 );
-clientsRouter.put("/clientId/:clientId", validateBody(updateClientBodySchema), updateClientByClientId);
+clientsRouter.put(
+  "/clientId/:clientId",
+  validateBody(updateClientBodySchema),
+  updateClientByClientId
+);
 
+clientsRouter.delete("/clientId/:clientId", deleteClientByClientIdController);
 
-// clientsRouter.get("/:id", getClientById);
-// clientsRouter.delete("/:id", deleteClient);
 
 export default clientsRouter;

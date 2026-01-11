@@ -17,4 +17,7 @@ export const firebaseAuthService = {
     console.log("userRecord#####", userRecord);
     return userRecord;
   },
+  deleteUserByUid: async (uid: string) => {
+    await admin.auth().deleteUser(uid);
+  },
 };

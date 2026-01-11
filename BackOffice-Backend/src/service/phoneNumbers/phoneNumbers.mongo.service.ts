@@ -109,6 +109,11 @@ const addPhoneNumbersInDb = async ({
   
   return result;
 };
+const deletePhoneNumbersInDb = async (clientId: string) => {
+  const db = getDb();
+  const collection = db.collection("phone_numbers");
+  await collection.deleteMany({ clientId: clientId });
+};
 
 export const phoneNumbersMongoService = {
   createPhoneNumbersInDb,
@@ -116,4 +121,5 @@ export const phoneNumbersMongoService = {
   replacePhoneNumbersInDb,
   getPhoneNumbersByClientId,
   addPhoneNumbersInDb,
+  deletePhoneNumbersInDb,
 };

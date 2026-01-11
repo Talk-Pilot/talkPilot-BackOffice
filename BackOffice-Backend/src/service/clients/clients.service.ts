@@ -10,7 +10,7 @@ import {
 } from "./clients.types";
 import { clientsMongoService } from "./clientsMongoService";
 import { executeTransaction } from "../../core/db/transaction";
-import { createFlowInDb, updateFlowInDb } from "../flows/flow.mongo.service";
+import { flowsMongoService } from "../flows/flow.mongo.service";
 import { phoneNumbersMongoService } from "../phoneNumbers/phoneNumbers.mongo.service";
 
 const createClientService = async (
@@ -38,7 +38,7 @@ const createClientService = async (
       }),
 
     (session) =>
-      createFlowInDb({
+      flowsMongoService.createFlowInDb({
         clientId: clientRecordFirebase.uid,
         session,
       }),
@@ -64,7 +64,6 @@ const createClientService = async (
 };
 
 const getAllClientsService = async () => {
-  console.log("🔥 getAllClientsService called");
   const clients = await clientsMongoService.getAllClients();
   return clients;
 };
@@ -106,8 +105,16 @@ const updateClientByClientIdService = async (
   };
 };
 
+const deleteClientByClientIdService = async (clientId: string) => {
+  await clientsMongoService.deleteClientInDb(clientId);
+  await phoneNumbersMongoService.deletePhoneNumbersInDb(clientId);
+  await flowsMongoService.deleteFlowInDb(clientId);
+  await firebaseAuthService.deleteUserByUid(clientId);
+};
+
 export {
   getAllClientsService,
   createClientService,
   updateClientByClientIdService,
+  deleteClientByClientIdService
 };

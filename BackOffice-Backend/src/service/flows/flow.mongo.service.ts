@@ -2,7 +2,7 @@ import { getDb } from "../../core/db/mongo";
 import { DEMO_FLOW_TEMPLATE } from "./flow.demoFlow";
 import { ClientSession } from "mongodb";
 
- const createFlowInDb = async ({
+const createFlowInDb = async ({
   clientId,
   session,
 }: {
@@ -28,7 +28,7 @@ import { ClientSession } from "mongodb";
 
 const updateFlowInDb = async ({
   clientId,
-  flowData, 
+  flowData,
 }: {
   clientId: string;
   flowData: {
@@ -44,18 +44,29 @@ const updateFlowInDb = async ({
     }>;
   };
 }) => {
-
   const db = getDb();
   const collection = db.collection("flows");
   const flowNewDoc = {
     clientId,
-   ...flowData,
+    ...flowData,
   };
   const result = await collection.findOneAndUpdate(
     { clientId: clientId },
     { $set: flowNewDoc },
-    { returnDocument: 'after' }
+    { returnDocument: "after" }
   );
   return result;
 };
-export { createFlowInDb, updateFlowInDb };
+
+const deleteFlowInDb = async (clientId: string) => {
+  const db = getDb();
+  const collection = db.collection("flows");
+  await collection.deleteOne({ clientId: clientId });
+};
+
+ export const flowsMongoService = {
+  createFlowInDb,
+  updateFlowInDb,
+  deleteFlowInDb,
+};
+

@@ -8,9 +8,6 @@ app.use(express.json());
 app.use(adminAuth);
 
 app.use("/clients", clientsRouter);
-app.use("/clients", (req, res, next) => {
-  console.log("🔥 Route hit:", req.method, req.path);
-  next();
-});
+
 
 export default app;
